@@ -50,13 +50,14 @@ class Board:
     def water_in_between(self, start, finish):
         if start == finish:
             return False
+
         elif start[0] == finish[0]:
             between_tiles = [(start[0],y) for y in xrange(min(start[1],finish[1])+1, max(start[1],finish[1]))]
             between_tiles = [self.tile_is("water", tile) for tile in between_tiles]
             if between_tiles:
                 return all(between_tiles)
             else:
-                return False
+                 return False
         elif start[1] == finish[1]:
             between_tiles = [(x,start[1]) for x in xrange(min(start[0],finish[0]+1), max(start[0],finish[0]))]
             between_tiles = [self.tile_is("water", tile) for tile in between_tiles]
@@ -66,20 +67,26 @@ class Board:
                 return False
         else:
             return False
-        
-    def move(self, start, finish):
-        if not self.coord(*start):
-            raise animal_exceptions.NoPieceException(start)
 
+    def can_move(self, start, finish):
+        if start == finish:
+            return False
         mover = self.pieces[self.coord(*start)]
+        if not mover:
+            return False
         if self.tile_is("water", finish) and mover.abilities != "swims":
-            return
+            return False
         if mover.abilities != "jumps" and self.water_in_between(start,finish):
-            print mover.name, "not a jumper"
-            return
+            return False
         target = self.coord(*finish)
-        if not target or mover.bigger(self.pieces[target]):
+        if target and not mover.bigger(self.pieces[target]):
+            return False
+        return True
+    
+    def move(self, start, finish):
+        if self.can_move(start, finish):
             self.destroy(finish)
+            mover = self.pieces[self.coord(*start)]
             self.place(mover.name, finish)
             self.destroy(start)
             

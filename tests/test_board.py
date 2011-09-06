@@ -21,6 +21,9 @@ class TestBoard(unittest.TestCase):
             self.board.place("elephant",(0,0))
             self.board.place("rat",(0,0))
 
+    def test_no_water_in_between_adjacent(self):
+        self.assertFalse(self.board.water_in_between((0,0),(0,1)))
+            
     def test_move(self):
         self.board.place("elephant",(0,0))
         self.board.move((0,0),(0,1))
@@ -30,12 +33,15 @@ class TestBoard(unittest.TestCase):
     def test_capture(self):
         self.board.place("elephant",(0,0))
         self.board.place("lion",(0,1))
+        self.assertTrue(self.board.can_move((0,0),(0,1)))
         self.board.move((0,0),(0,1))
+        self.assertEquals(self.board.coord(0,0), None)
         self.assertEquals(self.board.coord(0,1), "elephant")
 
     def test_capture_fail(self):
         self.board.place("elephant",(0,0))
         self.board.place("lion",(0,1))
+        self.assertFalse(self.board.can_move((0,1),(0,0)))
         self.board.move((0,1),(0,0))
         self.assertEquals(self.board.coord(0,0), "elephant")
         self.assertEquals(self.board.coord(0,1), "lion")
