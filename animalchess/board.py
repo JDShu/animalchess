@@ -21,6 +21,9 @@ class Board:
                 row.append(None)
             self.grid.append(row)
 
+    def fresh_start(self):
+        pass
+
     def coord(self, x,y):
         return self.grid[x][y]
     
@@ -79,7 +82,7 @@ class Board:
         if mover.abilities != "jumps" and self.water_in_between(start,finish):
             return False
         target = self.coord(*finish)
-        if target and not mover.bigger(self.pieces[target]):
+        if target and not mover.can_kill(self.pieces[target]):
             return False
         return True
     
@@ -96,5 +99,18 @@ class Piece:
         self.power = RULES[name]["power"]
         self.abilities = RULES[name]["abilities"]
 
+    def can_kill(self, piece):
+        return self.bigger(piece)
+
     def bigger(self, opponent):
         return self.power >= opponent.power
+
+class PlayerPiece(Piece):
+    def __init__(self, name, player):
+        Piece.__init__(self, name)
+        self.player = player
+
+    def can_kill(self, other_piece):
+        if self.player == other_piece.player:
+            return False
+        return Piece.can_kill(self, other_piece)

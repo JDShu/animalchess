@@ -77,7 +77,6 @@ class TestBoard(unittest.TestCase):
         self.board.move((0,0),(0,2))
         self.assertEquals(self.board.coord(0,0), "elephant")
         self.assertEquals(self.board.coord(0,2), None)
-
         
 if __name__ == '__main__':
     unittest.main()
